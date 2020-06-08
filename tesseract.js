@@ -45,7 +45,6 @@ function countDifferentCoords(vertex1, vertex2) {
 }
 
 let tesseract = new Tesseract();
-tesseract.colorCube();
 
 // ---------------------------------------------------
 
@@ -57,11 +56,24 @@ let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 6;
 
+let controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+let rotationSpeed = 0.01;
+
 window.addEventListener('resize', function() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 });
+
+let button = document.getElementById("button");
+button.addEventListener('click', function() {
+    if (rotationSpeed > 0.0)
+        rotationSpeed = 0.0;
+    else
+        rotationSpeed = 0.01;
+});
+
 
 // ---------------------------------------------------
 
@@ -79,7 +91,9 @@ for (let i = 0; i < tesseract.vertices.length; i++) {
 let edgeLines = [];
 for (let i = 0; i < tesseract.edges.length; i++) {
     let edge = tesseract.edges[i];
-    let material = new THREE.LineBasicMaterial( { color: tesseract.colors[edge[0]] } );
+    let material = new THREE.LineBasicMaterial(
+        { color: new THREE.Color().fromArray(tesseract.colors[edge[0]]) }
+    );
     let points = [
         new THREE.Vector3().fromArray(tesseract.vertices[edge[0]]),
         new THREE.Vector3().fromArray(tesseract.vertices[edge[1]])
@@ -90,7 +104,7 @@ for (let i = 0; i < tesseract.edges.length; i++) {
     scene.add(line);
 }
 
-let t = 0.01;
+tesseract.colorCube();
 
 let render = function () {
     requestAnimationFrame( render );
@@ -98,10 +112,10 @@ let render = function () {
     for (let i = 0; i < vertexMeshes.length; i++) {
         // vertex positions
         let v = tesseract.vertices[i];
-        let vx = Math.cos(t) * v[0] - Math.sin(t) * v[3];
-        let vw = Math.sin(t) * v[0] + Math.cos(t) * v[3];
-        let vy = Math.cos(t) * v[1] - Math.sin(t) * v[2];
-        let vz = Math.sin(t) * v[1] + Math.cos(t) * v[2];
+        let vx = Math.cos(rotationSpeed) * v[0] - Math.sin(rotationSpeed) * v[3];
+        let vw = Math.sin(rotationSpeed) * v[0] + Math.cos(rotationSpeed) * v[3];
+        let vy = Math.cos(rotationSpeed) * v[1] - Math.sin(rotationSpeed) * v[2];
+        let vz = Math.sin(rotationSpeed) * v[1] + Math.cos(rotationSpeed) * v[2];
         let stereography = 1 / (2 - vw);
         vertexMeshes[i].position.set(stereography * vx, stereography * vy, stereography * vz);
         //vertexMeshes[i].position.set(vx, vy, vz);
@@ -131,9 +145,11 @@ let render = function () {
         positions[5] = vertex2[2] * stereography2;
 
         edgeLines[i].geometry.attributes.position.needsUpdate = true;
-        
-        // TODO: colored cube should be green but it's red now
-        edgeLines[i].material.color.fromArray(tesseract.colors[edge[0]]);
+
+        let color1 = tesseract.colors[edge[0]];
+        let color2 = tesseract.colors[edge[1]];
+        if (color1.toString() === color2.toString())
+            edgeLines[i].material.color.fromArray(color1);
     }
 
     renderer.render(scene, camera);

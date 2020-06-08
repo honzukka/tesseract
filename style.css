@@ -1,0 +1,23 @@
+body { 
+    margin: 0; 
+}
+
+canvas { 
+    display: block; 
+}
+
+#button {
+	position: absolute;
+    top: 10px;
+    left: 10px;
+	width: 12em;
+	text-align: center;
+	z-index: 100;
+	display:block;
+}
+
+.btn.btn-outline-light:active,
+.btn.btn-outline-light:hover,
+.btn.btn-outline-light:focus {
+  background-color: rgb(51, 51, 51) !important;
+}
