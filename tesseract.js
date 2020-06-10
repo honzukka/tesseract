@@ -60,18 +60,29 @@ let controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 let rotationSpeed = 0.01;
 
-window.addEventListener('resize', function() {
+window.addEventListener("resize", function() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 });
 
-let button = document.getElementById("button");
-button.addEventListener('click', function() {
-    if (rotationSpeed > 0.0)
+let rotationButton = document.getElementById("rotationButton");
+rotationButton.addEventListener("click", function() {
+    if (rotationSpeed > 0.0) {
         rotationSpeed = 0.0;
-    else
+        rotationButton.innerHTML = "Resume rotation";
+    }
+    else {
         rotationSpeed = 0.01;
+        rotationButton.innerHTML = "Pause rotation";
+        rotationButton.blur();
+    }
+        
+});
+
+let colorButton = document.getElementById("colorButton");
+colorButton.addEventListener("click", function() {
+        
 });
 
 

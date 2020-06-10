@@ -4,13 +4,47 @@
 		<meta charset="utf-8">
 		<title>Tesseract</title>
 
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 		<link rel="stylesheet" href="style.css">
+
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+		
 		<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r100/build/three.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r100/examples/js/controls/OrbitControls.js"></script>
 	</head>
 	<body>
-		<button type="button" id="button" class="btn btn-outline-light text-light" onclick="this.blur()">Toggle Rotation</button>
+		<div class="container-fluid ui">
+			<div class="mt-2">
+				<div class="btn-group m-2">
+					<button type="button" id="rotationButton" class="btn btn-outline-light text-light">
+						Pause rotation
+					</button>
+				</div>
+				<div class="btn-group m-2">
+					<button type="button" id="projectionButton" class="btn btn-outline-light text-light">
+						Switch to orthogonal projection
+					</button>
+				</div>
+				<div class="btn-group m-2">
+					<button class="btn btn-outline-light text-light dropdown-toggle" type="button" id="colorButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					  Color cube
+					</button>
+					<div class="dropdown-menu" aria-labelledby="coloringButton">
+					  <a class="dropdown-item" href="#">Action</a>
+					  <a class="dropdown-item" href="#">Another action</a>
+					  <a class="dropdown-item" href="#">Something else here</a>
+					</div>
+				</div>
+				<div class="btn-group m-2">
+					<button type="button" id="axisButton" class="btn btn-outline-light text-light">
+						Choose rotation axis
+					</button>
+				</div>
+			</div>
+		</div>
+		<!-- <button type="button" id="button" class="btn btn-outline-light text-light" onclick="this.blur()">Toggle Rotation</button> -->
 		<script src="tesseract.js"></script>
 	</body>
 </html>
