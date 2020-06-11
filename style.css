@@ -12,6 +12,10 @@ canvas {
     position: fixed;
 }
 
+.dropdown-menu {
+    background-color: black;
+}
+
 
 .btn.btn-outline-light:active,
 .btn.btn-outline-light:hover,

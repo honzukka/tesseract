@@ -1,11 +1,22 @@
+// TODO: rotation axis control
+// TODO: stereography light control
+// TODO: basic site description (look at Bootstrap 4 features like pop-up and so on)
+// TODO: refactoring & best practices (check if WebGL is available, HTML metadata, ...)
+
+const ProjectionEnum = Object.freeze({"orthographic": 1, "stereographic": 2});
+
 class Tesseract {
-    constructor(scale=1, color=[1, 0, 0]) {
+    constructor(scale=1, color=[1, 0, 0], stereographyLightPos=2) {
         this.vertices = [ [scale, scale, scale, scale] ];
         this.vertices.forEach(v => this.vertices.push( [-v[0], v[1], v[2], v[3]] ));
         this.vertices.forEach(v => this.vertices.push( [v[0], -v[1], v[2], v[3]] ));
         this.vertices.forEach(v => this.vertices.push( [v[0], v[1], -v[2], v[3]] ));
         this.vertices.forEach(v => this.vertices.push( [v[0], v[1], v[2], -v[3]] ));
 
+        this.rotatedVertices = [];
+        this.vertices.forEach(v => this.rotatedVertices.push(v.slice(2)));
+
+        this.basic_color = color;
         this.colors = [];
         this.vertices.forEach(v => this.colors.push(color));
 
@@ -17,6 +28,17 @@ class Tesseract {
                 }
             }
         }
+
+        this.projection = ProjectionEnum.stereographic;
+        this.stereographyLightPos = stereographyLightPos;
+
+        this.rotationTheta = 0.0;
+    }
+
+    resetColor(color=[1, 0, 0]) {
+        this.basic_color = color;
+        for (let i = 0; i < this.vertices.length; i++)
+            this.colors[i] = this.basic_color;
     }
 
     colorCube(i=0, color=[0, 1, 0]) {
@@ -24,10 +46,34 @@ class Tesseract {
         let index = i % 4;
 
         for (let j = 0; j < this.vertices.length; j++) {
+            this.colors[j] = this.basic_color;
             if (this.vertices[j][index] == fixedValue) {
                 this.colors[j] = color;
             }
         }
+    }
+
+    rotateAndProjectVertex(i) {
+        let vx, vy, vz, vw;
+        [vx, vy, vz, vw] = this.vertices[i];
+
+        let vxNew = Math.cos(this.rotationTheta) * vx - Math.sin(this.rotationTheta) * vw;
+        if (this.projection == ProjectionEnum.orthographic) {
+            this.rotatedVertices[i] = [vxNew, vy, vz];
+            return;
+        }
+        let vwNew = Math.sin(this.rotationTheta) * vx + Math.cos(this.rotationTheta) * vw;
+
+        let stereography = 1 / (this.stereographyLightPos - vwNew);
+        this.rotatedVertices[i] = [
+            vxNew * stereography,
+            vy * stereography,
+            vz * stereography
+        ];
+    }
+
+    getVertex(i) {
+        return this.rotatedVertices[i];
     }
 }
 
@@ -71,18 +117,61 @@ rotationButton.addEventListener("click", function() {
     if (rotationSpeed > 0.0) {
         rotationSpeed = 0.0;
         rotationButton.innerHTML = "Resume rotation";
-    }
-    else {
+    } else {
         rotationSpeed = 0.01;
         rotationButton.innerHTML = "Pause rotation";
-        rotationButton.blur();
     }
-        
+    rotationButton.blur();
 });
 
-let colorButton = document.getElementById("colorButton");
-colorButton.addEventListener("click", function() {
-        
+let colorDropdownButton = document.getElementById("colorDropdownButton");
+document.getElementById("colorButtonNone").addEventListener("click", function () {
+    colorDropdownButton.innerHTML = "Colored cube: None";
+    tesseract.resetColor();
+});
+document.getElementById("colorButton1").addEventListener("click", function () {
+    colorDropdownButton.innerHTML = "Colored cube: 1";
+    tesseract.colorCube(0);
+});
+document.getElementById("colorButton2").addEventListener("click", function () {
+    colorDropdownButton.innerHTML = "Colored cube: 2";
+    tesseract.colorCube(1);
+});
+document.getElementById("colorButton3").addEventListener("click", function () {
+    colorDropdownButton.innerHTML = "Colored cube: 3";
+    tesseract.colorCube(2);
+});
+document.getElementById("colorButton4").addEventListener("click", function () {
+    colorDropdownButton.innerHTML = "Colored cube: 4";
+    tesseract.colorCube(3);
+});
+document.getElementById("colorButton5").addEventListener("click", function () {
+    colorDropdownButton.innerHTML = "Colored cube: 5";
+    tesseract.colorCube(4);
+});
+document.getElementById("colorButton6").addEventListener("click", function () {
+    colorDropdownButton.innerHTML = "Colored cube: 6";
+    tesseract.colorCube(5);
+});
+document.getElementById("colorButton7").addEventListener("click", function () {
+    colorDropdownButton.innerHTML = "Colored cube: 7";
+    tesseract.colorCube(6);
+});
+document.getElementById("colorButton8").addEventListener("click", function () {
+    colorDropdownButton.innerHTML = "Colored cube: 8";
+    tesseract.colorCube(7);
+});
+
+let projectionButton = document.getElementById("projectionButton");
+projectionButton.addEventListener("click", function() {
+    if (tesseract.projection == ProjectionEnum.orthographic) {
+        tesseract.projection = ProjectionEnum.stereographic;
+        projectionButton.innerHTML = "Switch to orthographic projection";
+    } else {
+        tesseract.projection = ProjectionEnum.orthographic;
+        projectionButton.innerHTML = "Switch to stereographic projection";
+    }
+    projectionButton.blur();
 });
 
 
@@ -115,48 +204,28 @@ for (let i = 0; i < tesseract.edges.length; i++) {
     scene.add(line);
 }
 
-tesseract.colorCube();
-
 let render = function () {
     requestAnimationFrame( render );
 
     for (let i = 0; i < vertexMeshes.length; i++) {
-        // vertex positions
-        let v = tesseract.vertices[i];
-        let vx = Math.cos(rotationSpeed) * v[0] - Math.sin(rotationSpeed) * v[3];
-        let vw = Math.sin(rotationSpeed) * v[0] + Math.cos(rotationSpeed) * v[3];
-        let vy = Math.cos(rotationSpeed) * v[1] - Math.sin(rotationSpeed) * v[2];
-        let vz = Math.sin(rotationSpeed) * v[1] + Math.cos(rotationSpeed) * v[2];
-        let stereography = 1 / (2 - vw);
-        vertexMeshes[i].position.set(stereography * vx, stereography * vy, stereography * vz);
-        //vertexMeshes[i].position.set(vx, vy, vz);
+        tesseract.rotateAndProjectVertex(i);
+        vertexMeshes[i].position.fromArray(tesseract.getVertex(i));
 
-        // update tesseract vertices
-        tesseract.vertices[i][0] = vx;
-        tesseract.vertices[i][1] = vy;
-        tesseract.vertices[i][2] = vz;
-        tesseract.vertices[i][3] = vw;
-
-        // color
+        // update colors
         vertexMeshes[i].material.color.fromArray(tesseract.colors[i]);
     }
 
     for (let i = 0; i < edgeLines.length; i++) {
         let edge = tesseract.edges[i];
-        let vertex1 = tesseract.vertices[edge[0]];
-        let vertex2 = tesseract.vertices[edge[1]];
+        projectedVertex1 = tesseract.getVertex(edge[0]);
+        projectedVertex2 = tesseract.getVertex(edge[1]);
+        
         let positions = edgeLines[i].geometry.attributes.position.array;
-        let stereography1 = 1 / (2 - vertex1[3]);
-        let stereography2 = 1 / (2 - vertex2[3]);
-        positions[0] = vertex1[0] * stereography1;
-        positions[1] = vertex1[1] * stereography1;
-        positions[2] = vertex1[2] * stereography1;
-        positions[3] = vertex2[0] * stereography2;
-        positions[4] = vertex2[1] * stereography2;
-        positions[5] = vertex2[2] * stereography2;
-
+        for (let j = 0; j < 3; j++) positions[j] = projectedVertex1[j];
+        for (let j = 3; j < 6; j++) positions[j] = projectedVertex2[j % 3];
         edgeLines[i].geometry.attributes.position.needsUpdate = true;
 
+        edgeLines[i].material.color.fromArray(tesseract.basic_color);
         let color1 = tesseract.colors[edge[0]];
         let color2 = tesseract.colors[edge[1]];
         if (color1.toString() === color2.toString())
@@ -164,6 +233,7 @@ let render = function () {
     }
 
     renderer.render(scene, camera);
+    tesseract.rotationTheta += rotationSpeed;
 }
 
 render();
