@@ -16,9 +16,20 @@ canvas {
     background-color: black;
 }
 
+.modal-header,
+.modal-body,
+.modal-footer {
+    background-color: black;
+    border: None;
+}
 
 .btn.btn-outline-light:active,
-.btn.btn-outline-light:hover,
-.btn.btn-outline-light:focus {
+.btn.btn-outline-light:hover {
   background-color: rgb(51, 51, 51) !important;
+}
+
+.btn.btn-outline-light:focus {
+    background-color: black;
+    outline: None;
+    box-shadow: None;
 }

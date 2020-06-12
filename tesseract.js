@@ -1,5 +1,3 @@
-// TODO: rotation axis control
-// TODO: stereography light control
 // TODO: basic site description (look at Bootstrap 4 features like pop-up and so on)
 // TODO: refactoring & best practices (check if WebGL is available, HTML metadata, ...)
 
@@ -14,7 +12,7 @@ class Tesseract {
         this.vertices.forEach(v => this.vertices.push( [v[0], v[1], v[2], -v[3]] ));
 
         this.rotatedVertices = [];
-        this.vertices.forEach(v => this.rotatedVertices.push(v.slice(2)));
+        this.vertices.forEach(v => this.rotatedVertices.push(v.slice(0, 3)));
 
         this.basic_color = color;
         this.colors = [];
@@ -33,6 +31,8 @@ class Tesseract {
         this.stereographyLightPos = stereographyLightPos;
 
         this.rotationTheta = 0.0;
+
+        this.rotationAxes = [[0, 3], [1, 2]];
     }
 
     resetColor(color=[1, 0, 0]) {
@@ -54,22 +54,26 @@ class Tesseract {
     }
 
     rotateAndProjectVertex(i) {
-        let vx, vy, vz, vw;
-        [vx, vy, vz, vw] = this.vertices[i];
+        let vertex = this.vertices[i];
+        let newVertex = vertex.slice();
 
-        let vxNew = Math.cos(this.rotationTheta) * vx - Math.sin(this.rotationTheta) * vw;
-        if (this.projection == ProjectionEnum.orthographic) {
-            this.rotatedVertices[i] = [vxNew, vy, vz];
-            return;
+        // rotate around each axis
+        for (let axis of this.rotationAxes) {
+            newVertex[axis[0]] = Math.cos(this.rotationTheta) * vertex[axis[0]] - Math.sin(this.rotationTheta) * vertex[axis[1]];
+            newVertex[axis[1]] = Math.sin(this.rotationTheta) * vertex[axis[0]] + Math.cos(this.rotationTheta) * vertex[axis[1]];
         }
-        let vwNew = Math.sin(this.rotationTheta) * vx + Math.cos(this.rotationTheta) * vw;
 
-        let stereography = 1 / (this.stereographyLightPos - vwNew);
-        this.rotatedVertices[i] = [
-            vxNew * stereography,
-            vy * stereography,
-            vz * stereography
-        ];
+        // project
+        if (this.projection == ProjectionEnum.orthographic)
+            this.rotatedVertices[i] = newVertex.slice(0, 3);
+        else {
+            let stereography = 1 / (this.stereographyLightPos - newVertex[3]);
+            this.rotatedVertices[i] = [
+                newVertex[0] * stereography,
+                newVertex[1] * stereography,
+                newVertex[2] * stereography
+            ];
+        }
     }
 
     getVertex(i) {
@@ -99,7 +103,7 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 let scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+let camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.00001, 10000 );
 camera.position.z = 6;
 
 let controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -110,6 +114,18 @@ window.addEventListener("resize", function() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+});
+
+let infoModal = document.getElementById("infoModal");
+infoModal.addEventListener("shown.bs.modal", function () {
+    console.log("ahoj!");
+    infoModal.trigger("focus");
+});
+
+let resetButton = document.getElementById("resetButton");
+resetButton.addEventListener("click", function() {
+    tesseract.rotationTheta = 0.0;
+    resetButton.blur();
 });
 
 let rotationButton = document.getElementById("rotationButton");
@@ -162,6 +178,66 @@ document.getElementById("colorButton8").addEventListener("click", function () {
     tesseract.colorCube(7);
 });
 
+let axisDropdownButton = document.getElementById("axisDropdownButton");
+document.getElementById("axisButtonXW_YZ").addEventListener("click", function () {
+    axisDropdownButton.innerHTML = "Rotation axis: XW & YZ";
+    tesseract.rotationAxes = [[0, 3], [1, 2]];
+});
+document.getElementById("axisButtonYW_XZ").addEventListener("click", function () {
+    axisDropdownButton.innerHTML = "Rotation axis: YW & XZ";
+    tesseract.rotationAxes = [[1, 3], [0, 2]];
+});
+document.getElementById("axisButtonZW_XY").addEventListener("click", function () {
+    axisDropdownButton.innerHTML = "Rotation axis: ZW & XZ";
+    tesseract.rotationAxes = [[2, 3], [0, 1]];
+});
+document.getElementById("axisButtonXY").addEventListener("click", function () {
+    axisDropdownButton.innerHTML = "Rotation axis: XY";
+    tesseract.rotationAxes = [[0, 1]];
+});
+document.getElementById("axisButtonXZ").addEventListener("click", function () {
+    axisDropdownButton.innerHTML = "Rotation axis: XZ";
+    tesseract.rotationAxes = [[0, 2]];
+});
+document.getElementById("axisButtonXW").addEventListener("click", function () {
+    axisDropdownButton.innerHTML = "Rotation axis: XW";
+    tesseract.rotationAxes = [[0, 3]];
+});
+document.getElementById("axisButtonYZ").addEventListener("click", function () {
+    axisDropdownButton.innerHTML = "Rotation axis: YZ";
+    tesseract.rotationAxes = [[1, 2]];
+});
+document.getElementById("axisButtonYW").addEventListener("click", function () {
+    axisDropdownButton.innerHTML = "Rotation axis: YW";
+    tesseract.rotationAxes = [[1, 3]];
+});
+document.getElementById("axisButtonZW").addEventListener("click", function () {
+    axisDropdownButton.innerHTML = "Rotation axis: ZW";
+    tesseract.rotationAxes = [[2, 3]];
+});
+
+let stereoDropdownButton = document.getElementById("stereoDropdownButton");
+document.getElementById("stereoButton1_5").addEventListener("click", function () {
+    stereoDropdownButton.innerHTML = "Stereographic projection origin: 1.5";
+    tesseract.stereographyLightPos = 1.5;
+});
+document.getElementById("stereoButton1_75").addEventListener("click", function () {
+    stereoDropdownButton.innerHTML = "Stereographic projection origin: 1.75";
+    tesseract.stereographyLightPos = 1.75;
+});
+document.getElementById("stereoButton2").addEventListener("click", function () {
+    stereoDropdownButton.innerHTML = "Stereographic projection origin: 2";
+    tesseract.stereographyLightPos = 2;
+});
+document.getElementById("stereoButton3").addEventListener("click", function () {
+    stereoDropdownButton.innerHTML = "Stereographic projection origin: 3";
+    tesseract.stereographyLightPos = 3;
+});
+document.getElementById("stereoButton5").addEventListener("click", function () {
+    stereoDropdownButton.innerHTML = "Stereographic projection origin: 5";
+    tesseract.stereographyLightPos = 5;
+});
+
 let projectionButton = document.getElementById("projectionButton");
 projectionButton.addEventListener("click", function() {
     if (tesseract.projection == ProjectionEnum.orthographic) {
@@ -210,6 +286,15 @@ let render = function () {
     for (let i = 0; i < vertexMeshes.length; i++) {
         tesseract.rotateAndProjectVertex(i);
         vertexMeshes[i].position.fromArray(tesseract.getVertex(i));
+        
+        // scale magic, so that vertex meshes look ok in all projections
+        let scale = 3;
+        if (tesseract.projection == ProjectionEnum.stereographic) {
+            scale = scale * (1 / tesseract.stereographyLightPos);
+            vertexMeshes[i].scale.set(scale, scale, scale);
+        } else
+        vertexMeshes[i].scale.set(scale / 2, scale / 2, scale / 2);
+        
 
         // update colors
         vertexMeshes[i].material.color.fromArray(tesseract.colors[i]);
