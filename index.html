@@ -24,19 +24,21 @@
 					</button>
 				</div>
 				<div class="btn-group m-2">
-					<button type="button" id="resetButton" class="btn btn-outline-light text-light">
-						Reset rotation
-					</button>
-				</div>
-				<div class="btn-group m-2">
-					<button type="button" id="rotationButton" class="btn btn-outline-light text-light">
-						Pause rotation
-					</button>
-				</div>
-				<div class="btn-group m-2">
 					<button type="button" id="projectionButton" class="btn btn-outline-light text-light">
 						Switch to orthogonal projection
 					</button>
+				</div>
+				<div class="btn-group m-2">
+					<button class="btn btn-outline-light text-light dropdown-toggle" type="button" id="stereoDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					  Stereographic projection origin: 2
+					</button>
+					<div class="dropdown-menu" aria-labelledby="stereoDropdownButton">
+						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton1_5">1.5</button>
+						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton1_75">1.75</button>
+						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton2">2</button>
+						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton3">3</button>
+						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton5">5</button>
+					</div>
 				</div>
 				<div class="btn-group m-2">
 					<button class="btn btn-outline-light text-light dropdown-toggle" type="button" id="colorDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -53,6 +55,16 @@
 						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="colorButton7">7</button>
 						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="colorButton8">8</button>
 					</div>
+				</div>	
+				<div class="btn-group m-2">
+					<button type="button" id="resetButton" class="btn btn-outline-light text-light">
+						Reset rotation
+					</button>
+				</div>
+				<div class="btn-group m-2">
+					<button type="button" id="rotationButton" class="btn btn-outline-light text-light">
+						Pause rotation
+					</button>
 				</div>
 				<div class="btn-group m-2">
 					<button class="btn btn-outline-light text-light dropdown-toggle" type="button" id="planeDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -70,18 +82,6 @@
 						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="planeButtonZW">ZW</button>
 					</div>
 				</div>
-				<div class="btn-group m-2">
-					<button class="btn btn-outline-light text-light dropdown-toggle" type="button" id="stereoDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					  Stereographic projection origin: 2
-					</button>
-					<div class="dropdown-menu" aria-labelledby="stereoDropdownButton">
-						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton1_5">1.5</button>
-						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton1_75">1.75</button>
-						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton2">2</button>
-						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton3">3</button>
-						<button class="dropdown-item btn btn-outline-light text-light" type="button" id="stereoButton5">5</button>
-					</div>
-				</div>	
 			</div>
 		</div>
 		
@@ -99,7 +99,23 @@
 				<!-- Modal body -->
 				<div class="modal-body">
 					<p class="text-light">
-						Here is some useful info about the tesseract!
+						The geometrical object that you can see on this page is called a <a href="https://en.wikipedia.org/wiki/Tesseract">tesseract</a>.
+						It is the 4D analogue of a cube. So what you see is rather a 3D shadow of a tesseract since humans have not yet found their way into the fourth dimension.
+					</p>
+					<p class="text-light">
+						This shadow is created by <a href="https://en.wikipedia.org/wiki/Stereographic_projection">stereographic projection</a> from 4D to 3D.
+						You can experiment with setting the origin of this projection.
+						Or, alternatively, you can switch to <a href="https://en.wikipedia.org/wiki/Orthographic_projection">orthographic projection</a>.
+						Note, however, that that's not the end! This webpage is 2D, so one more projection, this time a perspective projection, is applied, so that you can enjoy the tesseract on your screen.
+					</p>
+					<p class="text-light">
+						Tesseract is composed of 8 cubes (similarly, a cube is composed of 6 squares and a square is composed of 4 line segments).
+						You can change the color of any one of these cubes, so that is is easier to follow throughout the rotation.
+					</p>
+					<p class="text-light">
+						Speaking of rotation, there are many options to choose from!
+						Just like 2D space has one plane and 3D space has 3 planes, 4D space has 6 of them and you can have the tesseract rotate in each one of them.
+						Or, you can have it rotate around two planes at once!
 					</p>
 				</div>
 				
