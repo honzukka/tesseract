@@ -32,7 +32,7 @@ class Tesseract {
 
         this.rotationTheta = 0.0;
 
-        this.rotationAxes = [[0, 3], [1, 2]];
+        this.rotationPlanes = [[0, 3], [1, 2]];
     }
 
     resetColor(color=[1, 0, 0]) {
@@ -57,10 +57,10 @@ class Tesseract {
         let vertex = this.vertices[i];
         let newVertex = vertex.slice();
 
-        // rotate around each axis
-        for (let axis of this.rotationAxes) {
-            newVertex[axis[0]] = Math.cos(this.rotationTheta) * vertex[axis[0]] - Math.sin(this.rotationTheta) * vertex[axis[1]];
-            newVertex[axis[1]] = Math.sin(this.rotationTheta) * vertex[axis[0]] + Math.cos(this.rotationTheta) * vertex[axis[1]];
+        // rotate around each plane
+        for (let plane of this.rotationPlanes) {
+            newVertex[plane[0]] = Math.cos(this.rotationTheta) * vertex[plane[0]] - Math.sin(this.rotationTheta) * vertex[plane[1]];
+            newVertex[plane[1]] = Math.sin(this.rotationTheta) * vertex[plane[0]] + Math.cos(this.rotationTheta) * vertex[plane[1]];
         }
 
         // project
@@ -178,42 +178,42 @@ document.getElementById("colorButton8").addEventListener("click", function () {
     tesseract.colorCube(7);
 });
 
-let axisDropdownButton = document.getElementById("axisDropdownButton");
-document.getElementById("axisButtonXW_YZ").addEventListener("click", function () {
-    axisDropdownButton.innerHTML = "Rotation axis: XW & YZ";
-    tesseract.rotationAxes = [[0, 3], [1, 2]];
+let planeDropdownButton = document.getElementById("planeDropdownButton");
+document.getElementById("planeButtonXW_YZ").addEventListener("click", function () {
+    planeDropdownButton.innerHTML = "Rotation plane: XW & YZ";
+    tesseract.rotationPlanes = [[0, 3], [1, 2]];
 });
-document.getElementById("axisButtonYW_XZ").addEventListener("click", function () {
-    axisDropdownButton.innerHTML = "Rotation axis: YW & XZ";
-    tesseract.rotationAxes = [[1, 3], [0, 2]];
+document.getElementById("planeButtonYW_XZ").addEventListener("click", function () {
+    planeDropdownButton.innerHTML = "Rotation plane: YW & XZ";
+    tesseract.rotationPlanes = [[1, 3], [0, 2]];
 });
-document.getElementById("axisButtonZW_XY").addEventListener("click", function () {
-    axisDropdownButton.innerHTML = "Rotation axis: ZW & XZ";
-    tesseract.rotationAxes = [[2, 3], [0, 1]];
+document.getElementById("planeButtonZW_XY").addEventListener("click", function () {
+    planeDropdownButton.innerHTML = "Rotation plane: ZW & XZ";
+    tesseract.rotationPlanes = [[2, 3], [0, 1]];
 });
-document.getElementById("axisButtonXY").addEventListener("click", function () {
-    axisDropdownButton.innerHTML = "Rotation axis: XY";
-    tesseract.rotationAxes = [[0, 1]];
+document.getElementById("planeButtonXY").addEventListener("click", function () {
+    planeDropdownButton.innerHTML = "Rotation plane: XY";
+    tesseract.rotationPlanes = [[0, 1]];
 });
-document.getElementById("axisButtonXZ").addEventListener("click", function () {
-    axisDropdownButton.innerHTML = "Rotation axis: XZ";
-    tesseract.rotationAxes = [[0, 2]];
+document.getElementById("planeButtonXZ").addEventListener("click", function () {
+    planeDropdownButton.innerHTML = "Rotation plane: XZ";
+    tesseract.rotationPlanes = [[0, 2]];
 });
-document.getElementById("axisButtonXW").addEventListener("click", function () {
-    axisDropdownButton.innerHTML = "Rotation axis: XW";
-    tesseract.rotationAxes = [[0, 3]];
+document.getElementById("planeButtonXW").addEventListener("click", function () {
+    planeDropdownButton.innerHTML = "Rotation plane: XW";
+    tesseract.rotationPlanes = [[0, 3]];
 });
-document.getElementById("axisButtonYZ").addEventListener("click", function () {
-    axisDropdownButton.innerHTML = "Rotation axis: YZ";
-    tesseract.rotationAxes = [[1, 2]];
+document.getElementById("planeButtonYZ").addEventListener("click", function () {
+    planeDropdownButton.innerHTML = "Rotation plane: YZ";
+    tesseract.rotationPlanes = [[1, 2]];
 });
-document.getElementById("axisButtonYW").addEventListener("click", function () {
-    axisDropdownButton.innerHTML = "Rotation axis: YW";
-    tesseract.rotationAxes = [[1, 3]];
+document.getElementById("planeButtonYW").addEventListener("click", function () {
+    planeDropdownButton.innerHTML = "Rotation plane: YW";
+    tesseract.rotationPlanes = [[1, 3]];
 });
-document.getElementById("axisButtonZW").addEventListener("click", function () {
-    axisDropdownButton.innerHTML = "Rotation axis: ZW";
-    tesseract.rotationAxes = [[2, 3]];
+document.getElementById("planeButtonZW").addEventListener("click", function () {
+    planeDropdownButton.innerHTML = "Rotation plane: ZW";
+    tesseract.rotationPlanes = [[2, 3]];
 });
 
 let stereoDropdownButton = document.getElementById("stereoDropdownButton");
