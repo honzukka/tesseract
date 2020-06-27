@@ -2,6 +2,10 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<meta name="description" content="Tesseract - Exploration Tool">
+
 		<title>Tesseract</title>
 
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -11,9 +15,6 @@
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-		
-		<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r100/build/three.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r100/examples/js/controls/OrbitControls.js"></script>
 	</head>
 	<body>
 		<div class="container-fluid ui">
@@ -84,6 +85,10 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="container-fluid ui" id="errorDiv">
+
+		</div>
 		
 		<!-- Modal -->
 		<!-- The Modal -->
@@ -110,12 +115,15 @@
 					</p>
 					<p class="text-light">
 						Tesseract is composed of 8 cubes (similarly, a cube is composed of 6 squares and a square is composed of 4 line segments).
-						You can change the color of any one of these cubes, so that is is easier to follow throughout the rotation.
+						You can change the color of any one of these cubes, so that it is easier to follow throughout the rotation.
 					</p>
 					<p class="text-light">
 						Speaking of rotation, there are many options to choose from!
 						Just like 2D space has one plane and 3D space has 3 planes, 4D space has 6 of them and you can have the tesseract rotate in each one of them.
 						Or, you can have it rotate around two planes at once!
+					</p>
+					<p class="text-light">
+						Enjoy!
 					</p>
 				</div>
 				
@@ -128,6 +136,8 @@
 			</div>
 		</div>
 
+		<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r100/build/three.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r100/examples/js/controls/OrbitControls.js"></script>
 		<script src="tesseract.js"></script>
 	</body>
 </html>

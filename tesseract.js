@@ -1,23 +1,23 @@
-// TODO: basic site description (look at Bootstrap 4 features like pop-up and so on)
-// TODO: refactoring & best practices (check if WebGL is available, HTML metadata, ...)
+/*
+    CLASS & FUNCTION DEFINITIONS
+*/
 
 const ProjectionEnum = Object.freeze({"orthographic": 1, "stereographic": 2});
 
 class Tesseract {
     constructor(scale=1, color=[1, 0, 0], stereographyLightPos=2) {
+        // real tesseract vertices (4D coords) - these are never modified during the animation!
         this.vertices = [ [scale, scale, scale, scale] ];
         this.vertices.forEach(v => this.vertices.push( [-v[0], v[1], v[2], v[3]] ));
         this.vertices.forEach(v => this.vertices.push( [v[0], -v[1], v[2], v[3]] ));
         this.vertices.forEach(v => this.vertices.push( [v[0], v[1], -v[2], v[3]] ));
         this.vertices.forEach(v => this.vertices.push( [v[0], v[1], v[2], -v[3]] ));
 
+        // rotated & projected vertices (3D coords)
         this.rotatedVertices = [];
         this.vertices.forEach(v => this.rotatedVertices.push(v.slice(0, 3)));
 
-        this.basic_color = color;
-        this.colors = [];
-        this.vertices.forEach(v => this.colors.push(color));
-
+        // edges (indices into the vertex array)
         this.edges = [];
         for (let i = 0; i < this.vertices.length; i++) {
             for (let j = i + 1; j < this.vertices.length; j++) {
@@ -27,12 +27,16 @@ class Tesseract {
             }
         }
 
+        // vertex & corresponding edge color (RGB values)
+        this.basic_color = color;
+        this.colors = [];
+        this.vertices.forEach(v => this.colors.push(color));
+
+        // other properties
         this.projection = ProjectionEnum.stereographic;
         this.stereographyLightPos = stereographyLightPos;
-
-        this.rotationTheta = 0.0;
-
-        this.rotationPlanes = [[0, 3], [1, 2]];
+        this.rotationTheta = 0.0;   // absolute - applied to real vertices
+        this.rotationPlanes = [[0, 3], [1, 2]];     // this means XW & YZ
     }
 
     resetColor(color=[1, 0, 0]) {
@@ -45,6 +49,7 @@ class Tesseract {
         let fixedValue = (i < 4) ? 1 : -1;
         let index = i % 4;
 
+        // determines which vertices belong to cube i and colors them
         for (let j = 0; j < this.vertices.length; j++) {
             this.colors[j] = this.basic_color;
             if (this.vertices[j][index] == fixedValue) {
@@ -94,9 +99,46 @@ function countDifferentCoords(vertex1, vertex2) {
     return counter;
 }
 
-let tesseract = new Tesseract();
+function isWebGLAvailable () {
+    try {
+        var canvas = document.createElement( 'canvas' );
+        return !! ( window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) ) );
+    } catch ( e ) {
+        return false;
+    }
+}
 
-// ---------------------------------------------------
+function getWebGLErrorMessage () {
+    var message = 'Your browser (or graphics card) does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" ">WebGL</a> which is needed for the Tesseract to show up.';
+
+    var element = document.createElement( 'div' );
+    element.id = 'webglmessage';
+    element.style.fontFamily = 'monospace';
+    element.style.fontSize = '13px';
+    element.style.fontWeight = 'normal';
+    element.style.textAlign = 'center';
+    element.style.background = '#fff';
+    element.style.color = '#000';
+    element.style.padding = '1.5em';
+    element.style.width = '400px';
+    element.style.margin = '5em auto 0';
+
+    element.innerHTML = message;
+
+    return element;
+}
+
+/*
+    CANVAS, SCENE & UI INITIALIZATION
+*/
+
+if (!isWebGLAvailable()) {
+    let warning = getWebGLErrorMessage();
+    document.getElementById("errorDiv").appendChild(warning);
+    throw "";
+}
+
+let tesseract = new Tesseract();
 
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -251,7 +293,9 @@ projectionButton.addEventListener("click", function() {
 });
 
 
-// ---------------------------------------------------
+/*
+    GEOMETRY & ANIMATION CODE
+*/
 
 // vertex geometry
 let vertexGeometry = new THREE.SphereBufferGeometry(0.05);
@@ -283,7 +327,9 @@ for (let i = 0; i < tesseract.edges.length; i++) {
 let render = function () {
     requestAnimationFrame( render );
 
+    // update vertices
     for (let i = 0; i < vertexMeshes.length; i++) {
+        // geometry
         tesseract.rotateAndProjectVertex(i);
         vertexMeshes[i].position.fromArray(tesseract.getVertex(i));
         
@@ -296,11 +342,13 @@ let render = function () {
         vertexMeshes[i].scale.set(scale / 2, scale / 2, scale / 2);
         
 
-        // update colors
+        // colors
         vertexMeshes[i].material.color.fromArray(tesseract.colors[i]);
     }
 
+    // update edges
     for (let i = 0; i < edgeLines.length; i++) {
+        // geometry
         let edge = tesseract.edges[i];
         projectedVertex1 = tesseract.getVertex(edge[0]);
         projectedVertex2 = tesseract.getVertex(edge[1]);
@@ -310,6 +358,7 @@ let render = function () {
         for (let j = 3; j < 6; j++) positions[j] = projectedVertex2[j % 3];
         edgeLines[i].geometry.attributes.position.needsUpdate = true;
 
+        // colors
         edgeLines[i].material.color.fromArray(tesseract.basic_color);
         let color1 = tesseract.colors[edge[0]];
         let color2 = tesseract.colors[edge[1]];
